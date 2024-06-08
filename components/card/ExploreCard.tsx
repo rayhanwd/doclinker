@@ -1,7 +1,7 @@
 import { Link, router } from "expo-router";
 import React from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
-import { Card, Avatar, Button } from "react-native-paper";
+import { Button } from "react-native-paper";
 
 interface Doctor {
   _id: string;
@@ -13,7 +13,7 @@ interface Doctor {
   languages: string[];
 }
 
-const DoctorCard = ({ doctor }: { doctor: Doctor }) => {
+const ExploreCard = ({ doctor }: { doctor: Doctor }) => {
   return (
     <Link href={`/doctor/${doctor._id}`}>
       <View style={styles.card}>
@@ -49,7 +49,7 @@ const DoctorCard = ({ doctor }: { doctor: Doctor }) => {
 const styles = StyleSheet.create({
   card: {
     margin: 10,
-    width: 300,
+    width: 200,
     borderRadius: 15,
     borderColor: "#ddd",
     borderWidth: 1,
@@ -65,7 +65,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#333",
-    padding: 10,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
   },
@@ -79,7 +78,7 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   content: {
-    padding: 10,
+    marginLeft: 10,
   },
   contentText: {
     fontSize: 14,
@@ -87,11 +86,10 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   buttonContainer: {
-    padding: 10,
     alignItems: "center",
     borderTopWidth: 1,
     borderColor: "#eee",
   },
 });
 
-export default DoctorCard;
+export default ExploreCard;

@@ -10,6 +10,7 @@ import {
   Modal,
   TextInput,
   Alert,
+  Image,
 } from "react-native";
 import { Avatar, Button } from "react-native-paper";
 import * as SecureStore from "expo-secure-store";
@@ -31,7 +32,6 @@ const DoctorDetailsScreen = () => {
   useEffect(() => {
     navigation.setOptions({ headerTitle: "" });
   }, [navigation]);
-
 
   const handleCreateAppointment = async () => {
     setModalVisible(true);
@@ -154,7 +154,11 @@ const DoctorDetailsScreen = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Avatar.Icon style={styles.avatar} size={80} icon="account-circle" />
+      {doctorDetails.doctor_id.profile ? (
+        <Image style={styles.photo}  source={{ uri: doctorDetails.doctor_id.profile }}/>
+      ) : (
+        <Avatar.Icon style={styles.avatar} size={80} icon="account-circle" />
+      )}
       <View style={styles.detailsContainer}>
         <Text style={styles.label}>Name:</Text>
         <Text style={styles.text}>{doctorDetails.doctor_id.name}</Text>
@@ -252,6 +256,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
     backgroundColor: "#f5f5f5",
+  },
+  photo:{
+    width:"100%",
+    height:"30%",
+    borderRadius:10
   },
   avatar: {
     marginBottom: 20,

@@ -1,7 +1,16 @@
-import DoctorCard from "@/components/card/Doctor";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, ActivityIndicator, FlatList, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  ActivityIndicator,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Dimensions,
+  ScrollView,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import ExploreCard from "@/components/card/ExploreCard";
 
 interface Doctor {
   _id: string;
@@ -17,17 +26,21 @@ export default function ExploreScreen() {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>([]);
 
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-
-        const response = await fetch("https://doc-api-1.onrender.com/api/doctors/get/more", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          "https://doc-api-1.onrender.com/api/doctors/get/more",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to fetch doctors");
@@ -35,6 +48,7 @@ export default function ExploreScreen() {
 
         const data = await response.json();
         setDoctors(data);
+        setFilteredDoctors(data);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -45,9 +59,17 @@ export default function ExploreScreen() {
     fetchDoctors();
   }, []);
 
+  const handleSearch = (text: string) => {
+    setSearchQuery(text);
+    const filtered = doctors.filter((doctor) =>
+      doctor.specialty.toLowerCase().includes(text.toLowerCase())
+    );
+    setFilteredDoctors(filtered);
+  };
+
   if (loading) {
     return (
-      <SafeAreaView style={styles.loaderContainer}>
+      <SafeAreaView style={styles.container}>
         <ActivityIndicator size="large" color="#0000ff" />
       </SafeAreaView>
     );
@@ -55,7 +77,7 @@ export default function ExploreScreen() {
 
   if (error) {
     return (
-      <SafeAreaView style={styles.errorContainer}>
+      <SafeAreaView style={styles.container}>
         <Text style={styles.errorText}>Error: {error}</Text>
       </SafeAreaView>
     );
@@ -63,34 +85,67 @@ export default function ExploreScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList
-        data={doctors}
-        renderItem={({ item }) => <DoctorCard doctor={item} />}
-        keyExtractor={(item) => item._id}
-        contentContainerStyle={styles.listContainer}
-      />
+      <View style={styles.heroContainer}>
+        <Text style={styles.heroText}>Find Your Doctor</Text>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search by specialty..."
+          value={searchQuery}
+          onChangeText={handleSearch}
+        />
+      </View>
+      <ScrollView>
+        <View style={styles.gridContainer}>
+          {filteredDoctors.map((doctor, index) => (
+            <View
+              key={doctor._id}
+              style={[
+                styles.cardContainer,
+                index % 2 !== 0 && { marginLeft: 10 },
+              ]}
+            >
+              <ExploreCard doctor={doctor} />
+            </View>
+          ))}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
+const windowWidth = Dimensions.get("window").width;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f5f5f5",
   },
-  listContainer: {
-    padding: 20,
+  heroContainer: {
+    backgroundColor: "#007bff",
+    paddingHorizontal: 20,
+    paddingVertical: 30,
+    marginBottom: 20,
   },
-  loaderContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+  heroText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#fff",
+    marginBottom: 10,
   },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
+  searchInput: {
+    backgroundColor: "#fff",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  gridContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+  },
+  cardContainer: {
+    width: "48%",
+    marginBottom: 20,
   },
   errorText: {
     fontSize: 18,

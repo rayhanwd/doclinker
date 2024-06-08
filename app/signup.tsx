@@ -178,6 +178,7 @@ const SignUpScreen = () => {
             testID="dateTimePicker"
             value={dob}
             display="default"
+             //@ts-ignore
             onChange={onChange}
           />
         )}

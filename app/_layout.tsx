@@ -17,6 +17,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener((state) => {
+      //@ts-ignore
       setIsConnected(state.isConnected);
     });
 
@@ -36,7 +37,9 @@ export default function RootLayout() {
   if (!isConnected) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>No internet connection. Please check your connection and try again.</Text>
+        <Text style={styles.errorText}>
+          No internet connection. Please check your connection and try again.
+        </Text>
       </View>
     );
   }

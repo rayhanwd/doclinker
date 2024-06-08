@@ -6,9 +6,9 @@ import * as SecureStore from "expo-secure-store";
 
 const AppointmentDetails = () => {
   const { id } = useLocalSearchParams();
-  const [data, setAppointment] = useState(null);
+  const [data, setAppointment] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
 
   const navigation = useNavigation();
@@ -45,7 +45,8 @@ const AppointmentDetails = () => {
         setAppointment(data.data);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
+      //@ts-ignore
       setError(error.message);
     } finally {
       setLoading(false);
@@ -93,31 +94,33 @@ const AppointmentDetails = () => {
           <View style={styles.itemContainer}>
             <Text style={styles.label}>Date:</Text>
             <Text style={styles.text}>
-              {new Date(data.appointment.date).toLocaleString()}
+              {data?.appointment.date
+                ? new Date(data.appointment.date).toLocaleString()
+                : ""}
             </Text>
           </View>
           <View style={styles.itemContainer}>
             <Text style={styles.label}>Reason:</Text>
-            <Text style={styles.text}>{data.appointment.reason}</Text>
+            <Text style={styles.text}>{data?.appointment.reason}</Text>
           </View>
           <View style={styles.itemContainer}>
             <Text style={styles.label}>Status:</Text>
-            <Text style={styles.text}>{data.appointment.status}</Text>
+            <Text style={styles.text}>{data?.appointment.status}</Text>
           </View>
           {/* user details */}
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionLabel}>Patient Details</Text>
             <View style={styles.itemContainer}>
               <Text style={styles.label}>Name:</Text>
-              <Text style={styles.text}>{data.user.name}</Text>
+              <Text style={styles.text}>{data?.user.name}</Text>
             </View>
             <View style={styles.itemContainer}>
               <Text style={styles.label}>Email:</Text>
-              <Text style={styles.text}>{data.user.email}</Text>
+              <Text style={styles.text}>{data?.user.email}</Text>
             </View>
             <View style={styles.itemContainer}>
               <Text style={styles.label}>Mobile Number:</Text>
-              <Text style={styles.text}>{data.user.mobileNumber}</Text>
+              <Text style={styles.text}>{data?.user.mobileNumber}</Text>
             </View>
           </View>
           {/* doctor details */}
@@ -125,15 +128,15 @@ const AppointmentDetails = () => {
             <Text style={styles.sectionLabel}>Doctor Details</Text>
             <View style={styles.itemContainer}>
               <Text style={styles.label}>Name:</Text>
-              <Text style={styles.text}>{data.doctor.name}</Text>
+              <Text style={styles.text}>{data?.doctor.name}</Text>
             </View>
             <View style={styles.itemContainer}>
               <Text style={styles.label}>Email:</Text>
-              <Text style={styles.text}>{data.doctor.email}</Text>
+              <Text style={styles.text}>{data?.doctor.email}</Text>
             </View>
             <View style={styles.itemContainer}>
               <Text style={styles.label}>Mobile Number:</Text>
-              <Text style={styles.text}>{data.doctor.mobileNumber}</Text>
+              <Text style={styles.text}>{data?.doctor.mobileNumber}</Text>
             </View>
           </View>
         </View>
@@ -141,7 +144,6 @@ const AppointmentDetails = () => {
     </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

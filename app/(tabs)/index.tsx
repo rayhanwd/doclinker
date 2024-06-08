@@ -21,18 +21,44 @@ interface Doctor {
 }
 
 export default function HomeScreen() {
-  const [userName, setUserName] = useState("John Doe");
+  const [userName, setUserName] = useState(null);
   const [doctors, setDoctors] = useState([]);
   const [services, setServices] = useState([]);
   const [status, setStatus] = useState(false);
+
+  const getUser = async () => {
+    try {
+      const token = await SecureStore.getItemAsync("token");
+      if (!token) {
+        return;
+      }
+      const response = await fetch(
+        "https://doc-api-1.onrender.com/api/users/getone",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const userData = await response.json();
+      setUserName(userData.name);
+    } catch (error) {
+      console.log("Error fetching user data:", error);
+    }
+  };
+
   const GETDoctors = async () => {
     try {
-      const res = await fetch("https://doc-api-1.onrender.com/api/doctors/get", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const res = await fetch(
+        "https://doc-api-1.onrender.com/api/doctors/get",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const data = await res.json();
       setDoctors(data);
     } catch (error) {
@@ -40,17 +66,21 @@ export default function HomeScreen() {
     }
   };
   useEffect(() => {
+    getUser();
     GETDoctors();
   }, []);
 
   const GETServices = async () => {
     try {
-      const res = await fetch("https://doc-api-1.onrender.com/api/services/get", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const res = await fetch(
+        "https://doc-api-1.onrender.com/api/services/get",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const data = await res.json();
       setServices(data);
     } catch (error) {
@@ -74,7 +104,9 @@ export default function HomeScreen() {
       <SafeAreaView>
         <ScrollView>
           <View style={styles.header}>
-            <Text style={styles.greeting}>Hello</Text>
+            <Text style={styles.greeting}>
+              Hello,{userName && " " + userName}
+            </Text>
             {status ? (
               <Button
                 mode="contained"
@@ -83,7 +115,7 @@ export default function HomeScreen() {
                 <EvilIcons name="user" size={24} color="white" />
               </Button>
             ) : (
-              <Button mode="contained" onPress={() => router.push("/")}>
+              <Button mode="contained" onPress={() => router.push("/signin")}>
                 <EvilIcons name="user" size={24} color="white" />
               </Button>
             )}
@@ -91,6 +123,7 @@ export default function HomeScreen() {
           <Text style={styles.setionTitle}>Newly added</Text>
           <FlatList
             data={doctors}
+             //@ts-ignore
             keyExtractor={(item) => item._id}
             renderItem={({ item }) => <DoctorCard doctor={item} />}
             contentContainerStyle={styles.listContainer}
@@ -98,10 +131,12 @@ export default function HomeScreen() {
             showsHorizontalScrollIndicator={false}
             pagingEnabled
             bounces={false}
+            ItemSeparatorComponent={() => <View style={{ width: 10 }} />} 
           />
           <Text style={styles.setionTitle}>Recommend</Text>
           <FlatList
             data={doctors}
+             //@ts-ignore
             keyExtractor={(item) => item._id}
             renderItem={({ item }) => <DoctorCard doctor={item} />}
             contentContainerStyle={styles.listContainer}
@@ -109,10 +144,12 @@ export default function HomeScreen() {
             showsHorizontalScrollIndicator={false}
             pagingEnabled
             bounces={false}
+            ItemSeparatorComponent={() => <View style={{ width: 10 }} />} 
           />
           <Text style={styles.setionTitle}>Our services</Text>
           <FlatList
             data={services}
+             //@ts-ignore
             keyExtractor={(item) => item._id}
             renderItem={({ item }) => <ServiceCard service={item} />}
             contentContainerStyle={styles.listContainer}
@@ -120,6 +157,7 @@ export default function HomeScreen() {
             showsHorizontalScrollIndicator={false}
             pagingEnabled
             bounces={false}
+            ItemSeparatorComponent={() => <View style={{ width: 10 }} />} 
           />
         </ScrollView>
       </SafeAreaView>
@@ -144,6 +182,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   listContainer: {
-    padding: 10,
+    margin: 10,
   },
 });
